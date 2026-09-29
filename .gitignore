@@ -1,0 +1,14 @@
+# Build output
+/bin/
+/hellocalc
+
+# Go tooling
+*.test
+*.out
+coverage.*
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
