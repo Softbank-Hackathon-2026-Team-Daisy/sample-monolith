@@ -1,10 +1,10 @@
-# HelloCalc
+# sample-monolith — HelloCalc
 
 A tiny reference workload: a four-function calculator served by a single Go binary.
 
-## Team Daisy 연동 정보 (sample-monolith)
+## Team Daisy 연동 정보
 
-이 레포는 Daisy 배포 시스템이 배포할 **"사용자의 앱 저장소"를 흉내 낸 모놀리스 샘플**이에요. 앱 동작은 일부러 단순하게 고정해 두었으니, 배포 시스템을 검증할 때 기준 앱으로 쓰면 돼요. 공통 맥락과 스키마 원본은 [`daisy/CLAUDE.md`](https://github.com/Softbank-Hackathon-2026-Team-Daisy/daisy/blob/main/CLAUDE.md)에 있어요.
+이 레포는 Daisy 배포 시스템이 배포할 **"사용자의 앱 저장소"를 흉내 낸 모놀리스 샘플**이에요. 샘플 앱의 이름은 **HelloCalc**예요. 앱 동작은 일부러 단순하게 고정해 두었으니, 배포 시스템을 검증할 때 기준 앱으로 쓰면 돼요. 공통 맥락과 스키마 원본은 [`daisy/CLAUDE.md`](https://github.com/Softbank-Hackathon-2026-Team-Daisy/daisy/blob/main/CLAUDE.md)에 있어요.
 
 ### 앱 연결 요구사항 체크
 
