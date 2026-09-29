@@ -20,9 +20,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Seungjun1127/HelloCalc/internal/buildinfo"
-	"github.com/Seungjun1127/HelloCalc/internal/config"
-	"github.com/Seungjun1127/HelloCalc/internal/httpserver"
+	"github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/buildinfo"
+	"github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/config"
+	"github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/httpserver"
 )
 
 func main() {

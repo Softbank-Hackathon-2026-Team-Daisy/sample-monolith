@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Seungjun1127/HelloCalc/internal/buildinfo"
+	"github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/buildinfo"
 )
 
 func newTestServer(t *testing.T) (*Server, *bytes.Buffer) {

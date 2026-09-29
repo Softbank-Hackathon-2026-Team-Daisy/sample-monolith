@@ -15,9 +15,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/Seungjun1127/HelloCalc/internal/buildinfo"
-	"github.com/Seungjun1127/HelloCalc/internal/calculator"
-	"github.com/Seungjun1127/HelloCalc/web"
+	"github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/buildinfo"
+	"github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/calculator"
+	"github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/web"
 )
 
 // maxBodyBytes bounds the size of API request bodies.

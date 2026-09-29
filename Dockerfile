@@ -16,7 +16,7 @@ RUN go mod download
 COPY . .
 
 RUN set -eu; \
-    pkg=github.com/Seungjun1127/HelloCalc/internal/buildinfo; \
+    pkg=github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/buildinfo; \
     ldflags="-s -w -X ${pkg}.Commit=${COMMIT} -X ${pkg}.BuildTime=${BUILD_TIME}"; \
     if [ -n "${VERSION}" ]; then ldflags="${ldflags} -X ${pkg}.Version=${VERSION}"; fi; \
     CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
@@ -31,7 +31,7 @@ ARG COMMIT=unknown
 ARG BUILD_TIME=unknown
 LABEL org.opencontainers.image.title="HelloCalc" \
       org.opencontainers.image.description="A tiny reference workload." \
-      org.opencontainers.image.source="https://github.com/Seungjun1127/HelloCalc" \
+      org.opencontainers.image.source="https://github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.revision="${COMMIT}" \

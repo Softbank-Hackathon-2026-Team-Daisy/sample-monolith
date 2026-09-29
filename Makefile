@@ -1,5 +1,5 @@
 BINARY     := bin/hellocalc
-PKG        := github.com/Seungjun1127/HelloCalc/internal/buildinfo
+PKG        := github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/buildinfo
 IMAGE      ?= hellocalc
 VERSION    ?= $(shell sed -n 's/^[[:space:]]*Version[[:space:]]*= "\(.*\)"/\1/p' internal/buildinfo/buildinfo.go)
 COMMIT     ?= $(shell git rev-parse --short=12 HEAD 2>/dev/null || echo unknown)

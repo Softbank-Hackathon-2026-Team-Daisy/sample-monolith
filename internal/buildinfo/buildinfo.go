@@ -2,7 +2,7 @@
 //
 // Version, Commit and BuildTime may be overridden at link time, e.g.:
 //
-//	go build -ldflags "-X github.com/Seungjun1127/HelloCalc/internal/buildinfo.Commit=abc123"
+//	go build -ldflags "-X github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/buildinfo.Commit=abc123"
 package buildinfo
 
 import "runtime"
