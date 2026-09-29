@@ -147,12 +147,14 @@ func TestMethodNotAllowed(t *testing.T) {
 func TestHealthz(t *testing.T) {
 	s, _ := newTestServer(t)
 	s.SetReady(false) // liveness is independent of readiness
-	rec := do(t, s.Handler(), http.MethodGet, "/healthz", "", "")
-	if rec.Code != http.StatusOK {
-		t.Fatalf("status = %d", rec.Code)
-	}
-	if got := decode(t, rec)["status"]; got != "ok" {
-		t.Fatalf("status field = %v", got)
+	for _, path := range []string{"/health", "/healthz"} {
+		rec := do(t, s.Handler(), http.MethodGet, path, "", "")
+		if rec.Code != http.StatusOK {
+			t.Fatalf("%s status = %d", path, rec.Code)
+		}
+		if got := decode(t, rec)["status"]; got != "ok" {
+			t.Fatalf("%s status field = %v", path, got)
+		}
 	}
 }
 

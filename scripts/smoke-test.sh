@@ -88,6 +88,7 @@ while :; do
 done
 
 check "GET / serves the UI"             GET  /        200 '<title>HelloCalc</title>'
+check "GET /health"                     GET  /health  200 '"status": *"ok"'
 check "GET /healthz"                    GET  /healthz 200 '"status": *"ok"'
 check "GET /readyz"                     GET  /readyz  200 '"status": *"ready"'
 check "GET /version"                    GET  /version 200 '"name": *"HelloCalc"'

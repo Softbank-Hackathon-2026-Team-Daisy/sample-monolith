@@ -3,7 +3,7 @@
 // Usage:
 //
 //	hellocalc              start the server (configured via environment)
-//	hellocalc healthcheck  probe /healthz on the local server; exit 0 if healthy
+//	hellocalc healthcheck  probe /health on the local server; exit 0 if healthy
 //	hellocalc version      print build metadata as JSON
 package main
 
@@ -95,7 +95,7 @@ func healthcheck(cfg config.Config) error {
 	case "::", "[::]":
 		host = "::1"
 	}
-	url := "http://" + net.JoinHostPort(host, strconv.Itoa(cfg.Port)) + "/healthz"
+	url := "http://" + net.JoinHostPort(host, strconv.Itoa(cfg.Port)) + "/health"
 
 	client := &http.Client{Timeout: 3 * time.Second}
 	resp, err := client.Get(url)

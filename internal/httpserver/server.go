@@ -47,6 +47,7 @@ func New(logger *slog.Logger, info buildinfo.Info) *Server {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/calculate", s.handleCalculate)
+	mux.HandleFunc("GET /health", s.handleHealthz) // deploy.yaml healthcheck path
 	mux.HandleFunc("GET /healthz", s.handleHealthz)
 	mux.HandleFunc("GET /readyz", s.handleReadyz)
 	mux.HandleFunc("GET /version", s.handleVersion)

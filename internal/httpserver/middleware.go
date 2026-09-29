@@ -95,7 +95,7 @@ func withLogging(logger *slog.Logger, next http.Handler) http.Handler {
 		switch {
 		case rec.status >= 500:
 			level = slog.LevelError
-		case r.URL.Path == "/healthz" || r.URL.Path == "/readyz":
+		case r.URL.Path == "/health" || r.URL.Path == "/healthz" || r.URL.Path == "/readyz":
 			level = slog.LevelDebug
 		}
 

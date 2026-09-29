@@ -1,0 +1,126 @@
+# N-01 이미지 파이프라인: 빌드·테스트 → 커밋 해시 태그 → 레지스트리 푸시 → 배포 서비스에 이벤트 전달
+#
+# - PR: 테스트 + 이미지 빌드 + 컨테이너 스모크 테스트 (푸시 없음)
+# - main push: 위 과정 + linux/amd64·arm64 이미지를 ghcr.io에 커밋 해시 태그로 푸시 + 이벤트 전달
+# - 이미지 태그는 항상 커밋 해시(github.sha)이며 latest는 쓰지 않아요.
+# - 레지스트리는 팀 결정 전까지 GHCR(GITHUB_TOKEN 사용, 별도 비밀값 불필요)을 써요.
+# - 배포 서비스 이벤트: 저장소 Secret DAISY_WEBHOOK_URL이 있으면 JSON을 POST하고, 없으면 건너뛰어요.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - name: make check (gofmt, go vet, go test, build)
+        run: make check
+
+  image:
+    name: image
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Image metadata
+        id: meta
+        run: |
+          repo="$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')"
+          {
+            echo "image=ghcr.io/${repo}:${GITHUB_SHA}"
+            echo "created=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "version=$(sed -n 's/^[[:space:]]*Version[[:space:]]*= "\(.*\)"/\1/p' internal/buildinfo/buildinfo.go)"
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build image for smoke test (linux/amd64)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: hellocalc:ci
+          build-args: |
+            VERSION=${{ steps.meta.outputs.version }}
+            COMMIT=${{ github.sha }}
+            BUILD_TIME=${{ steps.meta.outputs.created }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test container
+        run: |
+          docker run -d --name hellocalc -p 8080:8080 hellocalc:ci
+          BASE_URL=http://localhost:8080 WAIT_SECONDS=20 EXPECTED_COMMIT=${GITHUB_SHA} ./scripts/smoke-test.sh || { docker logs hellocalc; exit 1; }
+          docker stop hellocalc
+          test "$(docker inspect hellocalc --format '{{.State.ExitCode}}')" = 0
+
+      - name: Log in to ghcr.io
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push (linux/amd64, linux/arm64)
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.image }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          build-args: |
+            VERSION=${{ steps.meta.outputs.version }}
+            COMMIT=${{ github.sha }}
+            BUILD_TIME=${{ steps.meta.outputs.created }}
+          cache-from: type=gha
+
+      - name: Summary
+        if: github.event_name != 'pull_request'
+        run: echo "Pushed \`${{ steps.meta.outputs.image }}\`" >> "$GITHUB_STEP_SUMMARY"
+
+  notify:
+    name: notify deploy service
+    needs: image
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send image event
+        env:
+          WEBHOOK_URL: ${{ secrets.DAISY_WEBHOOK_URL }}
+          IMAGE: ${{ needs.image.outputs.image }}
+        run: |
+          if [ -z "${WEBHOOK_URL}" ]; then
+            echo "::notice::DAISY_WEBHOOK_URL secret is not set; skipping deploy-service event"
+            exit 0
+          fi
+          payload=$(printf '{"repository":"%s","commit":"%s","ref":"%s","image":"%s","run_url":"%s"}' \
+            "${GITHUB_REPOSITORY}" "${GITHUB_SHA}" "${GITHUB_REF}" "${IMAGE}" \
+            "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}")
+          curl -fsS --max-time 15 --retry 3 -X POST -H 'Content-Type: application/json' -d "${payload}" "${WEBHOOK_URL}"
