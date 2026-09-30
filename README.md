@@ -145,15 +145,15 @@ make check   # gofmt check, go vet, tests, build
 The image is multi-stage, built `FROM --platform=$BUILDPLATFORM` so it cross-compiles for `linux/amd64` and `linux/arm64` without emulation. The runtime image is `gcr.io/distroless/static-debian13:nonroot`: it has no shell and no package manager, and it runs as UID 65532. It has a built-in `HEALTHCHECK` that uses `hellocalc healthcheck`.
 
 ```sh
-docker build -t hellocalc .
-docker run --rm -p 8080:8080 hellocalc
-curl http://localhost:8080/healthz
+docker build -t hellocalc:local .
+docker run --rm -p 8080:8080 hellocalc:local
+curl http://localhost:8080/health
 ```
 
-`make docker-build` also injects the version, commit and build time as build args (`VERSION`, `COMMIT`, `BUILD_TIME`). The same values are recorded as OCI labels. Multi-arch:
+`make docker-build` also injects the version, commit and build time as build args (`VERSION`, `COMMIT`, `BUILD_TIME`), records them as OCI labels, and tags the image with the commit hash (`hellocalc:<commit>`). Following the team rule, images are never tagged `latest`. Multi-arch:
 
 ```sh
-docker buildx build --platform linux/amd64,linux/arm64 -t <registry>/hellocalc:1.0.0 --push .
+docker buildx build --platform linux/amd64,linux/arm64 -t <registry>/hellocalc:<commit-sha> --push .
 ```
 
 Compose (single service, read-only filesystem, all capabilities dropped):
@@ -232,7 +232,7 @@ Push the image to a registry your cluster can pull from, then set the image and 
 
 ```sh
 kubectl apply -f deploy/kubernetes.yaml
-kubectl set image deployment/hellocalc hellocalc=<registry>/hellocalc:1.0.0
+kubectl set image deployment/hellocalc hellocalc=<registry>/hellocalc:<commit-sha>
 kubectl port-forward service/hellocalc 8080:80
 ```
 
