@@ -37,17 +37,17 @@ vet:
 ## check: local quality gate (format, vet, tests, build)
 check: fmt-check vet test build
 
-## docker-build: build the container image tagged $(IMAGE):$(VERSION) and :latest
+## docker-build: build the container image tagged $(IMAGE):$(COMMIT) (commit hash; no latest)
 docker-build:
 	docker build \
 		--build-arg VERSION=$(VERSION) \
 		--build-arg COMMIT=$(COMMIT) \
 		--build-arg BUILD_TIME=$(BUILD_TIME) \
-		-t $(IMAGE):$(VERSION) -t $(IMAGE):latest .
+		-t $(IMAGE):$(COMMIT) .
 
-## docker-run: run the container image on port 8080
+## docker-run: run the image built by docker-build on port 8080
 docker-run:
-	docker run --rm -p 8080:8080 $(IMAGE):$(VERSION)
+	docker run --rm -p 8080:8080 $(IMAGE):$(COMMIT)
 
 ## smoke: run the smoke test against $(BASE_URL)
 smoke:
