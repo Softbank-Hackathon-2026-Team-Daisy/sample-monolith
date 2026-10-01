@@ -267,8 +267,17 @@
   fetch("/version").then(function (res) {
     return res.ok ? res.json() : null;
   }).then(function (info) {
-    if (info && info.version) {
-      document.getElementById("foot").textContent = "v" + info.version;
+    if (!info) {
+      return;
+    }
+    if (info.version) {
+      var commit = info.commit && info.commit !== "unknown" ? " · " + info.commit.slice(0, 7) : "";
+      document.getElementById("foot").textContent = "v" + info.version + commit;
+    }
+    if (info.platform) {
+      var platform = document.getElementById("platform");
+      platform.textContent = "Running on " + info.platform;
+      platform.hidden = false;
     }
   }).catch(function () {});
 
