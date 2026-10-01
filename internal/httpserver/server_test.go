@@ -196,6 +196,16 @@ func TestVersion(t *testing.T) {
 	}
 }
 
+func TestVersionPlatform(t *testing.T) {
+	logger := NewLogger(&bytes.Buffer{}, slog.LevelDebug)
+	info := buildinfo.Get()
+	info.Platform = "AWS · ECS Fargate"
+	rec := do(t, New(logger, info).Handler(), http.MethodGet, "/version", "", "")
+	if got := decode(t, rec)["platform"]; got != info.Platform {
+		t.Errorf("platform = %v, want %q", got, info.Platform)
+	}
+}
+
 func TestStaticAssets(t *testing.T) {
 	s, _ := newTestServer(t)
 	tests := []struct{ path, contentType, contains string }{

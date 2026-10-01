@@ -23,6 +23,7 @@ import (
 	"github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/buildinfo"
 	"github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/config"
 	"github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/httpserver"
+	"github.com/Softbank-Hackathon-2026-Team-Daisy/sample-monolith/internal/platform"
 )
 
 func main() {
@@ -55,12 +56,14 @@ func run(args []string) error {
 func serve(cfg config.Config) error {
 	logger := httpserver.NewLogger(os.Stdout, cfg.LogLevel)
 	info := buildinfo.Get()
+	info.Platform = platform.Detect(os.Getenv, platform.FileExists)
 	logger.Info("starting",
 		slog.String("name", info.Name),
 		slog.String("version", info.Version),
 		slog.String("commit", info.Commit),
 		slog.String("build_time", info.BuildTime),
 		slog.String("go_version", info.GoVersion),
+		slog.String("platform", info.Platform),
 		slog.String("addr", cfg.Addr()),
 	)
 

@@ -9,7 +9,7 @@ import "runtime"
 
 // Link-time overridable build metadata. Defaults keep un-injected builds valid.
 var (
-	Version   = "1.0.0"
+	Version   = "1.1.0"
 	Commit    = "unknown"
 	BuildTime = "unknown"
 )
@@ -26,6 +26,10 @@ type Info struct {
 	GoVersion string `json:"goVersion"`
 	OS        string `json:"os"`
 	Arch      string `json:"arch"`
+
+	// Platform is where the process runs (see package platform). It is set at
+	// startup, not at build time, so Get leaves it empty.
+	Platform string `json:"platform,omitempty"`
 }
 
 // Get returns the build information of the current binary.

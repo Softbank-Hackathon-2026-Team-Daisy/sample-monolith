@@ -172,6 +172,7 @@ All configuration is read from environment variables. No config files are used.
 | `PORT`             | `8080`    | Listen port                                             |
 | `LOG_LEVEL`        | `info`    | `debug`, `info`, `warn`, `error`                        |
 | `SHUTDOWN_TIMEOUT` | `15s`     | Maximum time allowed for in-flight requests on shutdown |
+| `DEPLOY_PLATFORM`  | detected  | Name shown as "Running on …". Detected from runtime markers: `AWS_EXECUTION_ENV` (ECS), `K_SERVICE` (Cloud Run), `/.dockerenv` (Docker), otherwise `Local` |
 
 Invalid values make the process exit with status 1 and a message on stderr.
 
@@ -181,7 +182,7 @@ Invalid values make the process exit with status 1 and a message on stderr.
 |-----------------------|------------------------------------------------------------------------------------------|
 | `GET /health`, `GET /healthz` | `200 {"status":"ok"}` (liveness)                                                |
 | `GET /readyz`         | `200 {"status":"ready"}`; `503 {"status":"not ready"}` once shutdown begins             |
-| `GET /version`        | `200 {"name","version","commit","buildTime","goVersion","os","arch"}`                    |
+| `GET /version`        | `200 {"name","version","commit","buildTime","goVersion","os","arch","platform"}`         |
 | `POST /api/calculate` | `200 {"result":50}` for `{"left":12.5,"operator":"*","right":4}`                         |
 
 Calculator details:
