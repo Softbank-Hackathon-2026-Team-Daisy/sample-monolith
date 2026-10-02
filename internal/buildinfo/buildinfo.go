@@ -9,7 +9,7 @@ import "runtime"
 
 // Link-time overridable build metadata. Defaults keep un-injected builds valid.
 var (
-	Version   = "1.1.0"
+	Version   = "1.2.0"
 	Commit    = "unknown"
 	BuildTime = "unknown"
 )
