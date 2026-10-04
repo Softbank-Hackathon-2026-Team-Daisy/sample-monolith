@@ -241,7 +241,7 @@ kubectl port-forward service/hellocalc 8080:80
 
 [`scripts/smoke-test.sh`](scripts/smoke-test.sh) needs only `sh` and `curl`. It checks:
 
-- `/`, `/health`, `/healthz`, `/readyz` and `/version`
+- `/`, `/health`, `/readyz` and `/version` (not `/healthz`: Cloud Run reserves that path)
 - the calculator API, including division by zero and malformed JSON
 - `X-Request-ID` propagation
 
